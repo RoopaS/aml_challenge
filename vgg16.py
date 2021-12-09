@@ -25,7 +25,7 @@ Added parameters to match with VGG16 and for augmenting data
 WIDTH = 224
 HEIGHT = 224
 BATCH_SIZE = 50
-EPOCHS = 3
+EPOCHS = 10
 TRAIN_IMAGES_PATH = r'./dataset/train_set_labelled'
 TEST_IMAGES_PATH = r'./dataset/test_set'
 TRAIN_LABELS_PATH = r'./dataset/train_labels.csv'
@@ -78,43 +78,43 @@ test_gen = val_generator.flow_from_directory(
 )
 
 
-def get_model() -> keras.Model:
-    """
-    Build, compile and return the model
-    """
-    model = Sequential()
-    model.add(Input(shape=(WIDTH, HEIGHT, 3)))
+# def get_model() -> keras.Model:
+#     """
+#     Build, compile and return the model
+#     """
+#     model = Sequential()
+#     model.add(Input(shape=(WIDTH, HEIGHT, 3)))
 
-    model.add(Conv2D(filters=64, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=64, kernel_size=3, activation='relu', padding='same'))
-    model.add(MaxPool2D(pool_size=(2, 2)))
+#     model.add(Conv2D(filters=64, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=64, kernel_size=3, activation='relu', padding='same'))
+#     model.add(MaxPool2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(filters=128, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=128, kernel_size=3, activation='relu', padding='same'))
-    model.add(MaxPool2D(pool_size=(2, 2)))
+#     model.add(Conv2D(filters=128, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=128, kernel_size=3, activation='relu', padding='same'))
+#     model.add(MaxPool2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'))
+# #     model.add(Dropout(0.2))
+#     model.add(MaxPool2D(pool_size=(2, 2)))
+
+#     model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
+# #     model.add(Dropout(0.2))
+#     model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
+#     model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
 #     model.add(Dropout(0.2))
-    model.add(MaxPool2D(pool_size=(2, 2)))
+#     model.add(MaxPool2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
-#     model.add(Dropout(0.2))
-    model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
-    model.add(Conv2D(filters=512, kernel_size=3, activation='relu', padding='same'))
-    model.add(Dropout(0.2))
-    model.add(MaxPool2D(pool_size=(2, 2)))
+#     model.add(Flatten())
+#     model.add(Dense(units=256, activation='relu'))
+#     model.add(Dense(units=NUM_CLASSES, activation='softmax'))
 
-    model.add(Flatten())
-    model.add(Dense(units=256, activation='relu'))
-    model.add(Dense(units=NUM_CLASSES, activation='softmax'))
-
-    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(learning_rate=0.001), metrics='accuracy')
-    return model
+#     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(learning_rate=0.001), metrics='accuracy')
+#     return model
 
 
 # def make_predictions(model: keras.Model, test_gen: ImageDataGenerator):
@@ -133,17 +133,17 @@ def get_model() -> keras.Model:
 #     result.to_csv(f'predictions {datetime.datetime.now().strftime("%d-%m-%Y %Hh %Mm %Ss")}.csv')
 
 
-model = get_model()
-model.summary()
-model.fit(
-    train_gen,
-    validation_data=validation_gen,
-#     steps_per_epoch=10,
-#     validation_steps=1,
-    epochs=EPOCHS,
-    shuffle=True,
-    verbose=True,
-)
+# model = get_model()
+# model.summary()
+# model.fit(
+#     train_gen,
+#     validation_data=validation_gen,
+# #     steps_per_epoch=10,
+# #     validation_steps=1,
+#     epochs=EPOCHS,
+#     shuffle=True,
+#     verbose=True,
+# )
 
 # score = model.evaluate(test_gen, verbose=0)
 # print('Test score:', score[0])
@@ -151,28 +151,33 @@ model.fit(
 
 # make_predictions(model=model, test_gen=test_gen)
 
-# '''
-# Import the VGG16 library and add preprocessing layer to the front of VGG
-# ''' 
-# from tensorflow.keras.applications.vgg16 import VGG16
-# from keras.models import Model
+'''
+Import the VGG16 library and add preprocessing layer to the front of VGG
+''' 
+from tensorflow.keras.applications.vgg16 import VGG16
+from keras.models import Model
 
-# vgg16 = VGG16(input_shape=[224, 224, 3], weights='imagenet', include_top=False)
+vgg16 = VGG16(input_shape=[224, 224, 3], weights='imagenet', include_top=False)
 
-# # to not train existing weights
-# for layer in vgg16.layers:
-#     layer.trainable = False
+# to not train existing weights
+for layer in vgg16.layers:
+    layer.trainable = False
     
-# model = Model(inputs=vgg16.input)
-# model.summary()
+# our layers - you can add more if you want
+x = Flatten()(vgg16.output)
 
-# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+pred = Dense(80, activation='softmax')(x)
+    
+model = Model(inputs=vgg16.input, outputs=pred)
+model.summary()
 
-# model.fit(
-#     train_gen,
-#     validation_data=validation_gen,
-# #     steps_per_epoch=10,
-# #     validation_steps=1,
-#     epochs=EPOCHS,
-#     verbose=True,
-# )
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+model.fit_generator(
+    train_gen,
+    validation_data=validation_gen,
+    steps_per_epoch=len(train_gen),
+    validation_steps=len(validation_gen),
+    epochs=EPOCHS,
+    verbose=True,
+)
